@@ -5,7 +5,8 @@ body {
   font-family: "Montserrat", sans-serif;
 }
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
   font-family: "Montserrat", sans-serif;
   color: #aaa;
 }
