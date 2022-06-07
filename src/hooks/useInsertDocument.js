@@ -26,10 +26,6 @@ export const useInsertDocument = (docCollection) => {
   // deal with memory leak
   const [cancelled, setCancelled] = useState(false);
 
-  checkCancelBeforeDispatch({
-    type: "LOADING",
-  });
-
   const checkCancelBeforeDispatch = (action) => {
     if (!cancelled) {
       dispatch(action);
@@ -37,27 +33,27 @@ export const useInsertDocument = (docCollection) => {
   };
 
   const insertDocument = async (document) => {
+    checkCancelBeforeDispatch({ type: "LOADING" });
+
     try {
-      const newDocument = { ...document, createAt: Timestamp.now() };
+      const newDocument = { ...document, createdAt: Timestamp.now() };
 
       const insertedDocument = await addDoc(
         collection(db, docCollection),
         newDocument
       );
+
       checkCancelBeforeDispatch({
         type: "INSERTED_DOC",
         payload: insertedDocument,
       });
     } catch (error) {
-      checkCancelBeforeDispatch({
-        type: "ERROR",
-        payload: error.message,
-      });
+      checkCancelBeforeDispatch({ type: "ERROR", payload: error.message });
     }
   };
 
   useEffect(() => {
-    setCancelled(true);
+    return () => setCancelled(true);
   }, []);
 
   return { insertDocument, response };
